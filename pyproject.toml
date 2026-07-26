@@ -1,0 +1,10 @@
+[project]
+name = "evaluacion-personal-voz"
+version = "1.2.0"
+description = "Captura móvil, SQLite y exportación al formato institucional de evaluación de personal."
+requires-python = ">=3.11,<3.14"
+dependencies = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

@@ -1,0 +1,154 @@
+{
+  "nombre": "EvaluacionPersonalVoz",
+  "version": "1.2.0",
+  "tipo": "REPOSITORIO_VALIDADO_USUARIOS_DEPARTAMENTOS",
+  "fecha_generacion": "2026-07-25",
+  "migracion": {
+    "compatible_desde": [
+      "1.0.0",
+      "1.1.0",
+      "1.1.1"
+    ],
+    "departamento_inicial": "ADQUISICIÓN (REGISTRO)",
+    "preserva_evaluaciones": true
+  },
+  "funciones": {
+    "cuenta_administrador": true,
+    "capturistas_con_login": true,
+    "departamentos_administrables": true,
+    "puestos_por_departamento": true,
+    "excel_sin_columna_departamento": true,
+    "exportacion_por_departamento": true,
+    "zip_excel_todos_departamentos": true,
+    "respaldo_general": true
+  },
+  "integridad": {
+    "sqlite_wal": true,
+    "transacciones_atomicas": true,
+    "password_pbkdf2_sha256": true,
+    "sesiones_http_only": true,
+    "idempotencia_uuid": true,
+    "bloqueo_optimista_revision": true,
+    "pruebas_aprobadas": 6,
+    "concurrencia_validada": 60,
+    "errores_formula_excel": 0
+  },
+  "archivos": {
+    ".gitignore": {
+      "bytes": 126,
+      "sha256": "a093e7fcf7d7d4423a3be5daca16a96c2f089f351f9c331c55212f7a95a7f21b"
+    },
+    "CHANGELOG.md": {
+      "bytes": 3037,
+      "sha256": "e38ff8157b4946f1a901fa19e7ed3c9dcf3b4e51a4d769df4e52e6efe220f772"
+    },
+    "COMPILAR_PORTABLE_WINDOWS.bat": {
+      "bytes": 653,
+      "sha256": "126bab4506b33a02574b66dedc791daf129b2004f11a5e373e384e8ea4c126f7"
+    },
+    "INICIAR.bat": {
+      "bytes": 547,
+      "sha256": "28c2d615998b9d92c0fd9094962a66d431843fd4ce2ed13b984d52a35c7cc0a5"
+    },
+    "NOTAS_MANTENIMIENTO.md": {
+      "bytes": 802,
+      "sha256": "0a6d4a98585a50fe71c9c559106b863523eb920a5707c2290becfe0a5802b205"
+    },
+    "README.md": {
+      "bytes": 4152,
+      "sha256": "4dd747c01f333e68ee852eebaf6870a057a02c20a791bc5878d6b2ecce043221"
+    },
+    "app/__init__.py": {
+      "bytes": 91,
+      "sha256": "08c608dd2740274114fbeb3ce9ebb40328d47126316b4bc56196b6556c1d81f4"
+    },
+    "app/config.py": {
+      "bytes": 1335,
+      "sha256": "e41fcd84f2c6f4826aa03130061ed5fe9631bbddc79db0b35648f6d5e4d93f7f"
+    },
+    "app/database.py": {
+      "bytes": 50557,
+      "sha256": "45354df5ed7f418960846b16a10aee1b748455f02e5b879d840484176d5783cf"
+    },
+    "app/exporter.py": {
+      "bytes": 12148,
+      "sha256": "469b7b94cabd4ddc83f7619566c1ccaafa2a9a78c57238f66d056d66f2dd04c3"
+    },
+    "app/server.py": {
+      "bytes": 20626,
+      "sha256": "6eb2c021fa209ff1f7b3933395a52a663ccc80b2cd2d1099f28c6a3440943b29"
+    },
+    "app/static/app.js": {
+      "bytes": 41395,
+      "sha256": "b241d3eedb1bed7ea5b5025e476cdcc64001fd9fd58ac058770cd0fbce548136"
+    },
+    "app/static/styles.css": {
+      "bytes": 14050,
+      "sha256": "cc75190fce01a4dc3b3196a36e1666d755e39c0759c2a60b46ab4fd0a361f2d8"
+    },
+    "app/templates/index.html": {
+      "bytes": 14289,
+      "sha256": "820c9f4bd75a244d79240646ed51054f2cb3e909c2227535479e710f9a2a8309"
+    },
+    "assets/ESQUELETO FORMATO.xlsx": {
+      "bytes": 16731,
+      "sha256": "ffaf897fe7a8cebc8b965f15d9bb71e588d0a49cc34695204408c0c71b4a1309"
+    },
+    "data/.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "data/evaluaciones_personal.sqlite3": {
+      "bytes": 53248,
+      "sha256": "87ca26bd2a20a7d065aaa662905c72a1d9ae85213374d9c6d3b7086b93aa32c1"
+    },
+    "docs/ARQUITECTURA.md": {
+      "bytes": 1640,
+      "sha256": "af2d0a2100602d9997d58d66a92b0cbad4122a92d82ab3905fe9a90b11f4cd61"
+    },
+    "docs/RESULTADOS_VALIDACION.json": {
+      "bytes": 915,
+      "sha256": "59fe97953158400f8bf30ea226c30cd8ae49d308c9e6adc168ef17818077d26e"
+    },
+    "docs/VALIDACION.md": {
+      "bytes": 621,
+      "sha256": "0cca89ca709b33f40b93184a1b08a2333f8e20eeb6371fa2cb717afe125cf742"
+    },
+    "exports/.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "main.py": {
+      "bytes": 1848,
+      "sha256": "4d5e889277b901122a13b8fa9d8ab19882529036b88786d83b21cf073ce55559"
+    },
+    "pyproject.toml": {
+      "bytes": 305,
+      "sha256": "8fc826e94fb6b21becbb70316e4a6b6689a2383f7262648632c8acdc2099b6e1"
+    },
+    "requirements-dev.txt": {
+      "bytes": 31,
+      "sha256": "1d02bd95e00ae7f32ab9123c07c3b4d73e8fb7f0cb316d650f05f545ddacae8a"
+    },
+    "requirements.txt": {
+      "bytes": 69,
+      "sha256": "5dbf1fbb8cefea8b3922be19e94faa6e5b4d0663889ec385be47a881407e7369"
+    },
+    "tests/test_api.py": {
+      "bytes": 3598,
+      "sha256": "aae3e20c1d29d15ea70da2385cac3092538944c368bd97fc1d069b814257b2e1"
+    },
+    "tests/test_database.py": {
+      "bytes": 3724,
+      "sha256": "cdc4cd8ca3d622b94e68ed6791107487deba63ba5c5f1d698d2baf72e479a147"
+    },
+    "tests/test_exporter.py": {
+      "bytes": 1905,
+      "sha256": "5cccd31113966e1137a1b221ffe413d957babdbf7e1ba174a6c8b4f65654cf48"
+    },
+    "tests/test_ui_regressions.py": {
+      "bytes": 1020,
+      "sha256": "bc285edb6da24bfb7727252e1cd62735228249d0a290a8ca8579ddd3a2674d74"
+    }
+  }
+}

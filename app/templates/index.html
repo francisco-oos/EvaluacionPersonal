@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#0f4c81">
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="/static/styles.css?v={{ app_version }}">
+</head>
+<body>
+  <section id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <p class="eyebrow">ACCESO SEGURO</p>
+      <h1>{{ app_name }}</h1>
+      <form id="loginForm" class="form-card">
+        <label for="loginUsername">Usuario</label>
+        <input id="loginUsername" name="username" type="text" autocomplete="username" required maxlength="40" placeholder="Ej. juan.perez">
+        <label for="loginPassword">Contraseña</label>
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required maxlength="200">
+        <button class="primary wide" type="submit">Iniciar sesión</button>
+      </form>
+      <small>v{{ app_version }} · La computadora que inició el programa debe permanecer encendida.</small>
+    </div>
+  </section>
+
+  <div id="appShell" class="hidden">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">CAPTURA OPERATIVA</p>
+        <h1>{{ app_name }}</h1>
+        <p class="version">v{{ app_version }} · Usuarios, departamentos y Excel institucional</p>
+        <div class="session-badges">
+          <span id="userBadge" class="operator-badge">Usuario</span>
+          <span id="departmentBadge" class="department-badge">Departamento</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button id="voiceStatus" class="voice-status" type="button" aria-live="polite">🎙 Voz lista</button>
+        <button id="openPasswordBtn" class="secondary compact" type="button">Cambiar contraseña</button>
+        <button id="logoutBtn" class="ghost compact" type="button">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Módulos">
+      <button class="tab active" data-view="capture">Nueva evaluación</button>
+      <button class="tab" data-view="records">Registros</button>
+      <button class="tab" data-view="export">Exportar</button>
+      <button id="adminTab" class="tab hidden" data-view="admin">Administración</button>
+    </nav>
+
+    <main>
+      <section id="captureView" class="view active">
+        <div class="shared-status">
+          <span id="captureContextText">El registro se guardará con su cuenta y departamento.</span>
+        </div>
+        <div class="progress-shell">
+          <div class="progress-meta"><span id="stepLabel">Datos generales</span><strong id="stepCounter">1 de 7</strong></div>
+          <div class="progress-track"><div id="progressBar"></div></div>
+        </div>
+
+        <form id="evaluationForm" autocomplete="off">
+          <article class="step active" data-step="0">
+            <div class="card hero-card">
+              <p class="section-kicker">DATOS GENERALES</p>
+              <h2>¿A quién se evaluará?</h2>
+              <p>El puesto se toma del catálogo del departamento seleccionado. La voz y la corrección manual continúan disponibles.</p>
+            </div>
+            <div class="card form-card">
+              <div id="adminDepartmentField" class="hidden">
+                <label for="captureDepartment">Departamento / Área de captura</label>
+                <select id="captureDepartment"></select>
+                <small>Cambiar el departamento actualiza los puestos y el autocompletado de personal.</small>
+              </div>
+              <div id="fixedDepartmentField">
+                <label>Departamento / Área de captura</label>
+                <div id="fixedDepartmentName" class="readonly-field">—</div>
+              </div>
+
+              <label for="evaluationDate">Fecha de evaluación</label>
+              <input id="evaluationDate" type="date" required>
+              <small id="dateHuman"></small>
+
+              <label for="employeeName">Nombre del empleado</label>
+              <div class="input-with-action">
+                <input id="employeeName" type="text" list="employeeList" placeholder="Toque y dicte el nombre" maxlength="140">
+                <button class="mic-btn" type="button" data-voice-target="employeeName" aria-label="Dictar nombre">🎙</button>
+              </div>
+              <datalist id="employeeList"></datalist>
+
+              <label for="category">Categoría / Puesto</label>
+              <select id="category"><option value="">Seleccione un puesto</option></select>
+            </div>
+          </article>
+
+          <div id="areaSteps"></div>
+
+          <article class="step" data-step="6">
+            <div class="card hero-card review-hero">
+              <div>
+                <p class="section-kicker">REVISIÓN FINAL</p>
+                <h2>Confirme antes de guardar</h2>
+                <p>Puede regresar o entrar directamente a cualquier sección para corregirla.</p>
+              </div>
+              <button type="button" class="secondary inline-back" data-go-step="5">← Regresar al área anterior</button>
+            </div>
+            <div id="reviewContent" class="card review-card"></div>
+          </article>
+
+          <div class="workflow-actions">
+            <button id="prevBtn" type="button" class="secondary nav-main" disabled>← Anterior</button>
+            <button id="saveDraftBtn" type="button" class="ghost">Guardar borrador</button>
+            <button id="skipBtn" type="button" class="ghost">Saltar área</button>
+            <button id="nextBtn" type="button" class="primary nav-main">Siguiente →</button>
+            <button id="finishBtn" type="button" class="success hidden">Guardar evaluación</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="recordsView" class="view">
+        <div class="card toolbar-card">
+          <div>
+            <p class="section-kicker">BASE GENERAL</p>
+            <h2>Evaluaciones capturadas</h2>
+            <p id="recordsScopeText" class="muted-line"></p>
+          </div>
+          <button id="newEvaluationBtn" class="primary" type="button">+ Nueva</button>
+        </div>
+        <div class="card filters records-filters">
+          <input id="recordSearch" type="search" placeholder="Buscar nombre, puesto o capturista">
+          <select id="recordStatus"><option value="">Todos</option><option value="final">Finales</option><option value="draft">Borradores</option></select>
+          <select id="recordDepartment" class="admin-only-control hidden"></select>
+          <button id="refreshRecords" type="button" class="secondary">Actualizar</button>
+        </div>
+        <div id="statsGrid" class="stats-grid"></div>
+        <div id="recordsList" class="records-list"></div>
+      </section>
+
+      <section id="exportView" class="view">
+        <div class="card hero-card">
+          <h2>Exportar por departamento</h2>
+        </div>
+        <div class="card form-card">
+          <div id="exportDepartmentField">
+            <label for="exportDepartment">Departamento que se incluirá</label>
+            <select id="exportDepartment"></select>
+          </div>
+          <label for="exportStart">Desde</label>
+          <input id="exportStart" type="date">
+          <label for="exportEnd">Hasta</label>
+          <input id="exportEnd" type="date">
+          <label for="exportStatus">Registros a incluir</label>
+          <select id="exportStatus"><option value="final">Solo evaluaciones finalizadas</option><option value="all">Finales y borradores</option></select>
+          <button id="downloadExcel" type="button" class="success wide">Descargar Excel según filtros</button>
+          <button id="downloadAllExcel" type="button" class="primary wide">Descargar TODO este departamento</button>
+          <small>El segundo botón ignora las fechas y reúne finales y borradores del departamento seleccionado.</small>
+        </div>
+        <div id="adminGlobalExport" class="card backup-card hidden">
+          <h3>Todos los departamentos</h3>
+          <p>Descarga un ZIP con un Excel institucional separado para cada departamento. Ningún Excel recibe columnas nuevas.</p>
+          <button id="downloadDepartmentsZip" type="button" class="secondary wide">Descargar Excel de todos los departamentos</button>
+        </div>
+        <div id="adminBackupCard" class="card backup-card hidden">
+          <h3>Respaldo general</h3>
+          <p>Incluye la base SQLite, usuarios, departamentos, puestos y un Excel por departamento, con manifiesto SHA-256.</p>
+          <button id="downloadBackup" type="button" class="secondary wide">Descargar respaldo ZIP</button>
+        </div>
+      </section>
+
+      <section id="adminView" class="view">
+        <div class="card hero-card">
+          <p class="section-kicker">ADMINISTRACIÓN</p>
+          <h2>Usuarios, departamentos y puestos</h2>
+          <p>Cada capturista recibe el mismo host, pero inicia sesión con su cuenta y queda limitado al departamento asignado.</p>
+        </div>
+
+        <div class="admin-grid">
+          <section class="card admin-panel">
+            <h3>Departamentos</h3>
+            <form id="departmentForm" class="compact-form">
+              <label for="departmentName">Nombre</label>
+              <input id="departmentName" type="text" maxlength="120" placeholder="Ej. CONTROL DE MATERIAL" required>
+              <label for="departmentCode">Código opcional</label>
+              <input id="departmentCode" type="text" maxlength="24" placeholder="Ej. MAT">
+              <button class="primary" type="submit">Agregar departamento</button>
+            </form>
+            <div id="departmentsAdminList" class="admin-list"></div>
+          </section>
+
+          <section class="card admin-panel">
+            <h3>Puestos por departamento</h3>
+            <form id="positionForm" class="compact-form">
+              <label for="positionDepartment">Departamento</label>
+              <select id="positionDepartment" required></select>
+              <label for="positionName">Puesto</label>
+              <input id="positionName" type="text" maxlength="140" placeholder="Ej. OBSERVADOR A" required>
+              <button class="primary" type="submit">Agregar puesto</button>
+            </form>
+            <label for="positionListDepartment">Mostrar puestos de</label>
+            <select id="positionListDepartment"></select>
+            <div id="positionsAdminList" class="admin-list"></div>
+          </section>
+        </div>
+
+        <section class="card admin-panel">
+          <h3>Capturistas</h3>
+          <form id="userForm" class="user-form">
+            <div><label for="userDisplayName">Nombre</label><input id="userDisplayName" type="text" maxlength="120" required></div>
+            <div><label for="userUsername">Usuario</label><input id="userUsername" type="text" maxlength="40" placeholder="nombre.apellido" required></div>
+            <div><label for="userDepartment">Departamento</label><select id="userDepartment" required></select></div>
+            <div><label for="userPassword">Contraseña temporal</label><input id="userPassword" type="password" minlength="8" maxlength="200" required></div>
+            <button class="primary" type="submit">Crear capturista</button>
+          </form>
+          <small>Al iniciar por primera vez, el capturista deberá cambiar la contraseña temporal.</small>
+          <div id="usersAdminList" class="admin-list user-admin-list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <div id="confirmDialog" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h3 id="confirmTitle">Confirmar</h3>
+      <p id="confirmMessage"></p>
+      <div class="modal-actions"><button id="confirmCancel" class="secondary">Cancelar</button><button id="confirmAccept" class="danger">Aceptar</button></div>
+    </div>
+  </div>
+
+  <div id="passwordDialog" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h3 id="passwordTitle">Cambiar contraseña</h3>
+      <p id="passwordMessage">Escriba su contraseña actual y una nueva de al menos 8 caracteres.</p>
+      <form id="passwordForm" class="form-card">
+        <label for="currentPassword">Contraseña actual</label>
+        <input id="currentPassword" type="password" autocomplete="current-password" required>
+        <label for="newPassword">Nueva contraseña</label>
+        <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required>
+        <label for="repeatPassword">Repita la nueva contraseña</label>
+        <input id="repeatPassword" type="password" autocomplete="new-password" minlength="8" required>
+        <div class="modal-actions">
+          <button id="passwordCancel" type="button" class="secondary">Cancelar</button>
+          <button type="submit" class="primary">Guardar contraseña</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="resetPasswordDialog" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h3>Restablecer contraseña</h3>
+      <p id="resetPasswordUser"></p>
+      <form id="resetPasswordForm" class="form-card">
+        <input id="resetPasswordUserId" type="hidden">
+        <label for="resetPasswordValue">Nueva contraseña temporal</label>
+        <input id="resetPasswordValue" type="password" minlength="8" required>
+        <div class="modal-actions">
+          <button id="resetPasswordCancel" type="button" class="secondary">Cancelar</button>
+          <button type="submit" class="primary">Restablecer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/app.js?v={{ app_version }}"></script>
+</body>
+</html>

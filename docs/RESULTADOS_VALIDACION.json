@@ -1,0 +1,29 @@
+{
+  "aplicacion": "EvaluacionPersonalVoz",
+  "version": "1.2.0",
+  "fecha": "2026-07-25",
+  "resultado": "APROBADO",
+  "pruebas_automatizadas": {
+    "comando": "python -m pytest -q",
+    "aprobadas": 6,
+    "fallidas": 0
+  },
+  "validaciones": {
+    "cuenta_admin_inicial_y_cambio_obligatorio": true,
+    "sesiones_individuales": true,
+    "password_pbkdf2_sha256": true,
+    "departamentos_y_puestos_administrables": true,
+    "capturista_limitado_a_su_departamento": true,
+    "migracion_v1_1_1_integridad_sqlite": "ok",
+    "puestos_migrados_adquisicion_registro": 9,
+    "concurrencia_evaluaciones": 60,
+    "perdidas_en_concurrencia": 0,
+    "excel_conserva_columnas": "A:X",
+    "excel_agrega_columna_departamento": false,
+    "errores_formula_excel": 0,
+    "zip_un_excel_por_departamento": true,
+    "respaldo_bd_y_manifest_sha256": true,
+    "javascript_sintaxis": "ok",
+    "python_sintaxis": "ok"
+  }
+}
