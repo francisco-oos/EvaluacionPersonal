@@ -8,8 +8,10 @@ from app.database import ConflictError, Database, PermissionDenied
 
 def make_ready_database(tmp_path: Path):
     db = Database(tmp_path / "db.sqlite3")
-    token, admin = db.login("admin", "Admin1234!")
-    db.change_password(admin["id"], "Admin1234!", "NuevaAdmin12!")
+    bootstrap_password = db.initial_admin_password
+    assert bootstrap_password
+    token, admin = db.login("admin", bootstrap_password)
+    db.change_password(admin["id"], bootstrap_password, "NuevaAdmin12!")
     token, admin = db.login("admin", "NuevaAdmin12!")
     department = db.create_department("HSE CAMPO", "HSE")
     db.create_position(department["id"], "SUPERVISOR HSE A")
