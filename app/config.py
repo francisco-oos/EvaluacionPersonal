@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 APP_NAME = "Evaluación de Personal"
@@ -13,7 +14,8 @@ DATABASE_PATH = DATA_DIR / "evaluaciones_personal.sqlite3"
 DEFAULT_DEPARTMENT_CODE = "ADQ-REG"
 DEFAULT_DEPARTMENT_NAME = "ADQUISICIÓN (REGISTRO)"
 DEFAULT_ADMIN_USERNAME = "admin"
-DEFAULT_ADMIN_PASSWORD = "Admin1234!"
+INITIAL_ADMIN_PASSWORD = os.environ.get("EVALUACION_ADMIN_PASSWORD", "").strip()
+INITIAL_ADMIN_PASSWORD_FILE = DATA_DIR / ".initial_admin_password"
 SESSION_HOURS = 12
 PASSWORD_ITERATIONS = 240_000
 
