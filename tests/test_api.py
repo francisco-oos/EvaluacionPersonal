@@ -30,11 +30,13 @@ def test_authenticated_admin_catalog_capture_and_department_exports(tmp_path: Pa
     root = Path(__file__).resolve().parents[1]
     app = Application(tmp_path / "api.sqlite3", root / "assets" / "ESQUELETO FORMATO.xlsx", tmp_path / "exports")
 
-    admin_cookie, admin = login(app, "admin", "Admin1234!")
+    bootstrap_password = app.database.initial_admin_password
+    assert bootstrap_password
+    admin_cookie, admin = login(app, "admin", bootstrap_password)
     status, _, _, _ = request(app, "GET", "/api/admin/users", cookie=admin_cookie)
     assert status == 403
     status, _, data, _ = request(app, "POST", "/api/change-password", {
-        "current_password": "Admin1234!", "new_password": "NuevaAdmin12!"
+        "current_password": bootstrap_password, "new_password": "NuevaAdmin12!"
     }, admin_cookie)
     assert status == 200 and data["reauthenticate"] is True
     admin_cookie, admin = login(app, "admin", "NuevaAdmin12!")
