@@ -6,7 +6,7 @@ import threading
 import webbrowser
 
 from app import create_server
-from app.config import DEFAULT_ADMIN_PASSWORD, DEFAULT_ADMIN_USERNAME
+from app.config import DEFAULT_ADMIN_USERNAME
 
 
 def local_ip() -> str:
@@ -37,8 +37,12 @@ def main() -> None:
         print("-" * 78)
         print("PRIMER ACCESO ADMINISTRADOR")
         print(f"Usuario:     {DEFAULT_ADMIN_USERNAME}")
-        print(f"Contraseña:  {DEFAULT_ADMIN_PASSWORD}")
-        print("El sistema obligará a cambiarla inmediatamente.")
+        if server.application.database.initial_admin_password:
+            print(f"Contraseña:  {server.application.database.initial_admin_password}")
+            print("Es temporal, local y el sistema obligará a cambiarla inmediatamente.")
+        else:
+            print("No hay una contraseña bootstrap recuperable.")
+            print("Defina EVALUACION_ADMIN_PASSWORD y reinicie para rotarla mientras siga pendiente.")
     print("-" * 78)
     print("Permita el uso del micrófono en Chrome y no cierre esta ventana.")
     print("Para cerrar el servidor presione Ctrl+C.")
