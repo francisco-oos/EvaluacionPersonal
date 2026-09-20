@@ -15,8 +15,9 @@ from typing import Any, Iterable
 
 from .config import (
     AREAS,
-    DEFAULT_ADMIN_PASSWORD,
     DEFAULT_ADMIN_USERNAME,
+    INITIAL_ADMIN_PASSWORD,
+    INITIAL_ADMIN_PASSWORD_FILE,
     DEFAULT_DEPARTMENT_CODE,
     DEFAULT_DEPARTMENT_NAME,
     LEGACY_CATEGORIES,
@@ -46,6 +47,7 @@ class Database:
     def __init__(self, path: Path):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.initial_admin_password: str | None = None
         self.initialize()
 
     @contextmanager
@@ -226,7 +228,9 @@ class Database:
                 )
 
             if con.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
-                salt, password_hash = self._hash_password(DEFAULT_ADMIN_PASSWORD)
+                initial_password = INITIAL_ADMIN_PASSWORD or secrets.token_urlsafe(24)
+                self.initial_admin_password = initial_password
+                salt, password_hash = self._hash_password(initial_password)
                 con.execute(
                     """INSERT INTO users
                        (username, display_name, role, department_id, password_salt, password_hash,
@@ -234,6 +238,45 @@ class Database:
                        VALUES (?, 'Administrador', 'admin', NULL, ?, ?, 1, 1, ?, ?)""",
                     (DEFAULT_ADMIN_USERNAME, salt, password_hash, now, now),
                 )
+                if not INITIAL_ADMIN_PASSWORD:
+                    INITIAL_ADMIN_PASSWORD_FILE.parent.mkdir(parents=True, exist_ok=True)
+                    INITIAL_ADMIN_PASSWORD_FILE.write_text(initial_password + "\n", encoding="utf-8")
+                    try:
+                        INITIAL_ADMIN_PASSWORD_FILE.chmod(0o600)
+                    except OSError:
+                        pass
+            else:
+                pending_admin = con.execute(
+                    """SELECT id, password_salt, password_hash, must_change_password
+                       FROM users WHERE username=? AND active=1""",
+                    (DEFAULT_ADMIN_USERNAME,),
+                ).fetchone()
+                if pending_admin and bool(pending_admin["must_change_password"]):
+                    if INITIAL_ADMIN_PASSWORD:
+                        # Recovery path for a pending bootstrap account: an explicitly
+                        # configured password may safely rotate an unknown legacy bootstrap.
+                        if not self._verify_password(
+                            INITIAL_ADMIN_PASSWORD,
+                            pending_admin["password_salt"],
+                            pending_admin["password_hash"],
+                        ):
+                            salt, password_hash = self._hash_password(INITIAL_ADMIN_PASSWORD)
+                            con.execute(
+                                "UPDATE users SET password_salt=?, password_hash=?, updated_at=? WHERE id=?",
+                                (salt, password_hash, now, int(pending_admin["id"])),
+                            )
+                        self.initial_admin_password = INITIAL_ADMIN_PASSWORD
+                    elif INITIAL_ADMIN_PASSWORD_FILE.is_file():
+                        try:
+                            candidate = INITIAL_ADMIN_PASSWORD_FILE.read_text(encoding="utf-8").strip()
+                        except OSError:
+                            candidate = ""
+                        if candidate and self._verify_password(
+                            candidate,
+                            pending_admin["password_salt"],
+                            pending_admin["password_hash"],
+                        ):
+                            self.initial_admin_password = candidate
 
             con.executescript(
                 """
@@ -391,6 +434,12 @@ class Database:
             )
             con.execute("DELETE FROM sessions WHERE user_id=?", (int(user_id),))
             con.commit()
+        if row["username"] == DEFAULT_ADMIN_USERNAME:
+            self.initial_admin_password = None
+            try:
+                INITIAL_ADMIN_PASSWORD_FILE.unlink(missing_ok=True)
+            except OSError:
+                pass
         return self.get_user(user_id)
 
     def initial_admin_pending(self) -> bool:
