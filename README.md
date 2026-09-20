@@ -14,9 +14,13 @@ Aplicación web local en Python para capturar evaluaciones desde teléfonos y co
 
 ### Cuenta inicial
 
-```text
-Usuario: admin
-Contraseña: Admin1234!
+En el primer arranque se mantiene el usuario `admin`, pero **ya no existe una contraseña universal en el código**. Si no define `EVALUACION_ADMIN_PASSWORD`, la aplicación genera una contraseña aleatoria, la muestra en la consola y la conserva temporalmente sólo en `data/.initial_admin_password` (ignorado por Git) hasta que el administrador la cambie.
+
+También puede fijar explícitamente la contraseña de aprovisionamiento antes del primer arranque:
+
+```powershell
+$env:EVALUACION_ADMIN_PASSWORD = "use-una-clave-temporal-propia"
+python main.py
 ```
 
 El primer acceso obliga a cambiar esa contraseña. Después, use `Administración` para crear los capturistas y entregarles:
