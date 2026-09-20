@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 data/*.sqlite3
 data/*.sqlite3-*
+data/.initial_admin_password
 exports/*.xlsx
 exports/*.zip
 build/
